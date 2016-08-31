@@ -379,6 +379,12 @@ class TileCoding(Projector):
 
         state_range:    range of each dimension
 
+        offsets:    (optional) the offsets between the layers for each set of
+                    tilings. By default, all layers are uniformly offset from
+                    each other. If you provide a list of lists of offsets (which
+                    is recommended), this must hold: len(offsets) ==
+                    len(input_indices)
+
         bias_term:  (optional) boolean specifying whether to add an extra bias term which
                     is always on. By default, a bias_term is added.
 
@@ -390,13 +396,17 @@ class TileCoding(Projector):
                  ntilings,
                  hashing,
                  state_range,
+                 offsets = None,
                  bias_term = True):
         super(TileCoding, self).__init__()
         if hashing == None:
             hashing = [None]*len(ntilings)
+        if offsets == None:
+            offsets = [None for _ in xrange(len(input_indices))]
         self.state_range = state_range
-        self.tilings = [Tiling(in_index, nt, t, state_range, hashing = h)
-                        for in_index, nt, t, h in zip(input_indices, ntiles, ntilings, hashing)]
+        self.tilings = [Tiling(in_index, nt, t, state_range, offset=o, hashing = h)
+                        for in_index, nt, t, h, o
+                        in zip(input_indices, ntiles, ntilings, hashing, offsets)]
         self.__size = sum(map(lambda x: x.size, self.tilings))
         self.bias_term = bias_term
         self.index_offset = np.zeros(len(ntilings), dtype = 'int')
