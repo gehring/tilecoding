@@ -271,6 +271,8 @@ class Tiling(object):
 
         ntilings: The number of individual layers in this set of tilings.
 
+        state_range:    range of each dimension
+
         offset: (optional) the offsets between each layer in this set of
                 tilings. By default, each layer is uniformly offset from
                 each other.
@@ -374,6 +376,8 @@ class TileCoding(Projector):
                     set of tilings will use a cartesian product, i.e., each
                     combination of indices is mapped to a unique tile. This is
                     equivalent to laying a n-d grid on the input dimensions.
+
+        state_range:    range of each dimension
 
         bias_term:  (optional) boolean specifying whether to add an extra bias term which
                     is always on. By default, a bias_term is added.
