@@ -304,7 +304,7 @@ class Tiling(object):
         self.state_range[0] -= (self.state_range[1]-self.state_range[0])/(ntiles-1)
 
         self.offset = offset
-        if offset == None:
+        if offset is None:
             self.offset = np.empty((ntiles.shape[0], ntilings))
             for i in xrange(ntiles.shape[0]):
                 self.offset[i,:] = -np.linspace(0, 1.0/ntiles[i], ntilings, False);
@@ -401,7 +401,7 @@ class TileCoding(Projector):
         super(TileCoding, self).__init__()
         if hashing == None:
             hashing = [None]*len(ntilings)
-        if offsets == None:
+        if offsets is None:
             offsets = [None for _ in xrange(len(input_indices))]
         self.state_range = state_range
         self.tilings = [Tiling(in_index, nt, t, state_range, offset=o, hashing = h)
