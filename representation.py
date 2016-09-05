@@ -264,7 +264,7 @@ class Tiling(object):
         input_index: array (or list) of the input indices to be considered. This allows
                      to specify on which inputs are the tilings defined.
 
-        ntile:  integer, or array of integers, specifying how many uniform
+        ntiles: integer, or array of integers, specifying how many uniform
                 divisions for each dimension (or all dimensions if a single
                 integer is given). Each layer in this set will have the same
                 number of divisions in each dimension.
@@ -275,7 +275,12 @@ class Tiling(object):
 
         offset: (optional) the offsets between each layer in this set of
                 tilings. By default, each layer is uniformly offset from
-                each other.
+                each other. Shape: (#dimensions, ntilings), i.e. for each
+                dimension you have to specify the offset of each tiling. For
+                dimension d, the offset should be negative and > -1/ntiles[d].
+                So if you want random offsets for one dimension, you could use
+                something like this:
+                -1.0/ntiles[d] * np.random.random_sample(size=ntilings)
 
         hashing:    (optional) map from the individual bin index for each
                     dimension to a tile index. By default, this is assumed
@@ -383,7 +388,9 @@ class TileCoding(Projector):
                     tilings. By default, all layers are uniformly offset from
                     each other. If you provide a list of lists of offsets (which
                     is recommended), this must hold: len(offsets) ==
-                    len(input_indices)
+                    len(input_indices). Each item in offsets is passed to the
+                    constructor of Tiling, so see there for further
+                    documentation.
 
         bias_term:  (optional) boolean specifying whether to add an extra bias term which
                     is always on. By default, a bias_term is added.
