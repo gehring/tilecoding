@@ -306,7 +306,7 @@ class Tiling(object):
             ntiles = np.array(ntiles)
 
         self.state_range = [state_range[0][input_index].copy().astype(float), state_range[1][input_index].copy().astype(float)]
-        self.state_range[0] -= (self.state_range[1]-self.state_range[0])/(ntiles-(ntilings-1.0)/ntilings)
+        self.state_range[0] -= (self.state_range[1]-self.state_range[0])/(ntiles-1)
 
         self.offset = offset
         if offset is None:
