@@ -98,7 +98,7 @@ tc = representation.TileCoding(input_indices = [[1],[2]],
 								state_range = state_range)
 ```
 From there, we can build complex sets of tilings with relative ease. Suppose we wanted a set of 1D tilings for each
-dimension as well as a single tilings over all three dimensions, all with random offsets. We can achieve this with
+dimension as well as another set of tilings over all three dimensions, all with random offsets. We can achieve this with
 the following lines:
 ```python
 # define the input dimensions for the different sets
