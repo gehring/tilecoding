@@ -9,17 +9,20 @@ First, we consider the necessary arguments to get a simple 10x10x10 grid discret
 over all 3 dimensions This gives us a feature representation which, if combined with a linear function, would
 give us a piece-wise constant approximation.
 ```python
+state_range = [[min_d0, min_d1, min_d2], [max_d0, max_d1, max_d2]]
 tc = representation.TileCoding(input_indices = [np.arange(3)],
 								ntiles = [10],
 								ntilings = [1],
-								hashing = None)
+								hashing = None,
+								state_range = state_range)
 ```
 or, equivalently,
 ```python
 tc = representation.TileCoding(input_indices = [np.arange(3)],
 								ntiles = [np.array([10,10,10], dtype='int')],
 								ntilings = [1],
-								hashing = None)
+								hashing = None,
+								state_range = state_range)
 
 ```
 It is important for the first three arguments to be lists with the same number of entries, if offsets are included 
@@ -37,7 +40,8 @@ our representation without making tiles smaller.
 tc = representation.TileCoding(input_indices = [np.arange(3)],
 								ntiles = [10],
 								ntilings = [5],
-								hashing = None)
+								hashing = None,
+								state_range = state_range)
 ```
 This gives us 5 overlapping set of tilings, each 10x10x10 grids. By default, tilings generated this way will be
 uniformly offset from each other in order to uniformly distribute the expressiveness. In some cases, we might want
@@ -57,7 +61,8 @@ tc = representation.TileCoding(input_indices = [np.arange(3)],
 								ntiles = ntiles,
 								ntilings = ntilings,
 								hashing = None,
-								offset = random_offsets)
+								offset = random_offsets,
+								state_range = state_range)
 ```
 The offset argument must provide an offset for each input dimension and each layer of tilings, which is why the 
 offsets provided have shape = (3,5). To ensure proper coverage of the the tilings over the state space, offsets
@@ -71,7 +76,8 @@ second dimension, corresponding to 5 stacked discritizations of size 10:
 tc1 = representation.TileCoding(input_indices = [[1]],
 								ntiles = [10],
 								ntilings = [5],
-								hashing = None)
+								hashing = None,
+								state_range = state_range)
 ```
 We might also want to add another 1D discritization on a different dimension which is a little coarser but with
 a few more layers, for example:
@@ -79,7 +85,8 @@ a few more layers, for example:
 tc2 = representation.TileCoding(input_indices = [[2]],
 								ntiles = [5],
 								ntilings = [7],
-								hashing = None)
+								hashing = None,
+								state_range = state_range)
 ```
 Combining these together is tedious as we have to properly keep track of index offsets. Instead, TileCoding offers 
 this automatically if these two sets of tilings are built together in the following way:
@@ -87,7 +94,8 @@ this automatically if these two sets of tilings are built together in the follow
 tc = representation.TileCoding(input_indices = [[1],[2]],
 								ntiles = [10, 5],
 								ntilings = [5, 7],
-								hashing = None)
+								hashing = None,
+								state_range = state_range)
 ```
 From there, we can build complex sets of tilings with relative ease. Suppose we wanted a set of 1D tilings for each
 dimension as well as a single tilings over all three dimensions, all with random offsets. We can achieve this with
@@ -111,5 +119,6 @@ tc = representation.TileCoding(input_indices = input_indices,
 								ntiles = ntiles,
 								ntilings = ntilings,
 								hashing = None,
-								offset = random_offsets)
+								offset = random_offsets,
+								state_range = state_range)
 ```
