@@ -47,7 +47,7 @@ be created manually with the offset argument as such:
 ntiles = [np.array([10,10,10], dtype='int')]
 ntilings = [5]
 random_offsets = [-1.0/num_tiles[:,None] * np.random.rand(num_tiles.shape[0], num_tilings) 
-					for num_tiles, num_tilings in zip(ntiles), ntilings]
+					for num_tiles, num_tilings in zip(ntiles, ntilings)]
 ```
 This way of creating random offsets should allow you to easily create random offsets for various ntiles and ntilings
 as long as ntiles does not use the int shortcut and only contains arrays of int. The final constructor then looks
@@ -105,7 +105,7 @@ ntilings = [8, 4, 4, 4]
 
 # get random offsets for all tilings
 random_offsets = [-1.0/num_tiles[:,None] * np.random.rand(num_tiles.shape[0], num_tilings) 
-					for num_tiles, num_tilings in zip(ntiles), ntilings]
+					for num_tiles, num_tilings in zip(ntiles, ntilings)]
 
 tc = representation.TileCoding(input_indices = input_indices,
 								ntiles = ntiles,
