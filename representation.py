@@ -409,8 +409,8 @@ class TileCoding(Projector):
         if hashing == None:
             hashing = [None]*len(ntilings)
         if offsets is None:
-            offsets = [None for _ in xrange(len(input_indices))]
-        self.state_range = state_range
+            offsets = [None] * len(input_indices)
+        self.state_range = np.array(state_range)
         self.tilings = [Tiling(in_index, nt, t, state_range, offset=o, hashing = h)
                         for in_index, nt, t, h, o
                         in zip(input_indices, ntiles, ntilings, hashing, offsets)]
