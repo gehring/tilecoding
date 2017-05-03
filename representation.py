@@ -295,6 +295,7 @@ class Tiling(object):
                  ntiles,
                  ntilings,
                  state_range,
+                 rnd_stream,
                  offset = None,
                  hashing = None):
 
@@ -305,14 +306,21 @@ class Tiling(object):
         else:
             ntiles = np.array(ntiles)
 
-        self.state_range = [state_range[0][input_index].copy().astype(float), state_range[1][input_index].copy().astype(float)]
-        self.state_range[0] -= (self.state_range[1]-self.state_range[0])/(ntiles-1)
+        self.state_range = [state_range[0][input_index].copy().astype(float)[None,:,None], 
+                state_range[1][input_index].copy().astype(float)[None,:,None]]
+
+        if ntiles.ndim > 1:
+            ntiles = ntiles[None,:,:]
+        else:
+            ntiles = ntiles[None,:,None]
+
+        self.state_range[0] = self.state_range[0] - (self.state_range[1]-self.state_range[0])/(ntiles-1)
 
         self.offset = offset
         if offset is None:
-            self.offset = np.empty((ntiles.shape[0], ntilings))
+            self.offset = np.empty((ntiles.shape[1], ntilings))
             for i in xrange(ntiles.shape[0]):
-                self.offset[i,:] = -np.linspace(0, 1.0/ntiles[i], ntilings, False);
+                self.offset[i,:] = -rnd_stream.random_sample(ntilings)/ntiles[0,i]
 
         if self.hashing == None:
             self.hashing = IdentityHash(ntiles)
@@ -332,8 +340,8 @@ class Tiling(object):
         else:
             state = state[:,:,None]
 
-        nstate = (state[:, self.input_index, :] - self.state_range[0][None,:,None])/(self.state_range[1]-self.state_range[0])[None,:,None]
-        indicies =((self.offset[None,:,:] + nstate)*self.ntiles[None,:,None]).astype(np.int)
+        nstate = (state[:, self.input_index, :] - self.state_range[0])/(self.state_range[1]-self.state_range[0])
+        indicies =((self.offset[None,:,:] + nstate)*self.ntiles).astype(np.int)
         return self.hashing(indicies) + self.index_offset[None,:]
 
 """ Full tile coding implementation. This represents a projector, from states
@@ -403,6 +411,7 @@ class TileCoding(Projector):
                  ntilings,
                  hashing,
                  state_range,
+                 rnd_stream = None,
                  offsets = None,
                  bias_term = True):
         super(TileCoding, self).__init__()
@@ -410,8 +419,12 @@ class TileCoding(Projector):
             hashing = [None]*len(ntilings)
         if offsets is None:
             offsets = [None] * len(input_indices)
+
+        if offsets is None and rnd_stream is None:
+            raise Exception('Either offsets for each tiling or a random stream (numpy) needs to be given in the constructor')
+            
         self.state_range = np.array(state_range)
-        self.tilings = [Tiling(in_index, nt, t, state_range, offset=o, hashing = h)
+        self.tilings = [Tiling(in_index, nt, t, state_range, rnd_stream, offset=o, hashing = h)
                         for in_index, nt, t, h, o
                         in zip(input_indices, ntiles, ntilings, hashing, offsets)]
         self.__size = sum(map(lambda x: x.size, self.tilings))
