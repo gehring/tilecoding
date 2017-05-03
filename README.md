@@ -47,8 +47,8 @@ tc = representation.TileCoding(input_indices = [np.arange(3)],
 						rnd_stream = np.random.RandomState())
 ```
 This gives us 5 overlapping set of tilings, each 10x10x10 grids. By default, tilings generated this way will be
-uniformly offset from each other in order to uniformly distribute the expressiveness. In some cases, we might want
-to specify the offsets ourselves, either to randomize the representation or add domain knowledge. Random offsets can
+given a uniform random offset based on the width a tile for the a given layer. In some cases, we might want
+to specify the offsets ourselves, either to randomize the representation in a specific way or add domain knowledge. Random offsets can
 be created manually with the offset argument as such:
 ```python
 ntiles = [np.array([10,10,10], dtype='int')]
@@ -57,16 +57,15 @@ random_offsets = [-1.0/num_tiles[:,None] * np.random.rand(num_tiles.shape[0], nu
 					for num_tiles, num_tilings in zip(ntiles, ntilings)]
 ```
 This way of creating random offsets should allow you to easily create random offsets for various ntiles and ntilings
-as long as ntiles does not use the int shortcut and only contains arrays of int. The final constructor then looks
-like this:
+as long as ntiles does not use the int shortcut and only contains arrays of int. Specifying the offsets manually removes
+the requirement for a random stream. The final constructor then looks like this:
 ```python
 tc = representation.TileCoding(input_indices = [np.arange(3)],
 						ntiles = ntiles,
 						ntilings = ntilings,
 						hashing = None,
 						offset = random_offsets,
-						state_range = state_range,
-						rnd_stream = np.random.RandomState())
+						state_range = state_range)
 ```
 The offset argument must provide an offset for each input dimension and each layer of tilings, which is why the 
 offsets provided have shape = (3,5). To ensure proper coverage of the the tilings over the state space, offsets
