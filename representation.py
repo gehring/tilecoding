@@ -422,9 +422,9 @@ class TileCoding(Projector):
 
         if offsets is None and rnd_stream is None:
             raise Exception('Either offsets for each tiling or a random stream (numpy) needs to be given in the constructor')
-            
+
         self.state_range = np.array(state_range)
-        self.tilings = [Tiling(in_index, nt, t, state_range, rnd_stream, offset=o, hashing = h)
+        self.tilings = [Tiling(in_index, nt, t, self.state_range, rnd_stream, offset=o, hashing = h)
                         for in_index, nt, t, h, o
                         in zip(input_indices, ntiles, ntilings, hashing, offsets)]
         self.__size = sum(map(lambda x: x.size, self.tilings))
@@ -489,13 +489,16 @@ class IdentityHash(Hashing):
         self.memory = np.prod(dims)
         self.dims = dims.astype('int')
         self.wrap = wrap
-        self.dim_offset =np.cumprod(np.hstack(([1],self.dims[:0:-1]))).astype('int')[None,::-1,None]
+        self.dim_offset = np.cumprod(np.vstack((np.ones((self.dims.shape[2],1)), self.dims[0,:0:-1,:])), 
+                                axis = 0).astype('int')[None,::-1,:]
+
+        # self.dim_offset =np.cumprod(np.hstack(([1],self.dims[:0:-1]))).astype('int')[None,::-1,None]
 
     def __call__(self, indices):
         if self.wrap:
-            indices = np.remainder(indices, self.dims[None, :,None])
+            indices = np.remainder(indices, self.dims)
         else:
-            indices = np.clip(indices, 0, self.dims[None, :,None]-1)
+            indices = np.clip(indices, 0, self.dims-1)
         return np.sum(indices*self.dim_offset, axis=1)
 
 ################## END OF TILE CODING IMPLEMENTATION #########################
