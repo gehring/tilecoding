@@ -492,8 +492,6 @@ class IdentityHash(Hashing):
         self.dim_offset = np.cumprod(np.vstack((np.ones((self.dims.shape[2],1)), self.dims[0,:0:-1,:])), 
                                 axis = 0).astype('int')[None,::-1,:]
 
-        # self.dim_offset =np.cumprod(np.hstack(([1],self.dims[:0:-1]))).astype('int')[None,::-1,None]
-
     def __call__(self, indices):
         if self.wrap:
             indices = np.remainder(indices, self.dims)
