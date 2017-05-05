@@ -125,6 +125,6 @@ tc = representation.TileCoding(input_indices = input_indices,
 						ntiles = ntiles,
 						ntilings = ntilings,
 						hashing = None,
-						offset = random_offsets,
+						offsets = random_offsets,
 						state_range = state_range)
 ```

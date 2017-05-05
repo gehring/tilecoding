@@ -344,6 +344,11 @@ class Tiling(object):
         indicies =((self.offset[None,:,:] + nstate)*self.ntiles).astype(np.int)
         return self.hashing(indicies) + self.index_offset[None,:]
 
+    @property
+    def ntilings(self):
+        return self.offset.shape[1]
+    
+
 """ Full tile coding implementation. This represents a projector, from states
     to features.
 """
@@ -462,6 +467,11 @@ class TileCoding(Projector):
     @property
     def size(self):
         return self.__size
+
+    @property
+    def nonzeros(self):
+        return np.sum([t.ntilings for t in self.tilings]) + (1 if self.bias_term else 0)
+    
 
 
 class UNH(Hashing):
